@@ -7,7 +7,7 @@
  * 
  * IMPORTANT NOTE: without sharing is used to avoid sharing issues with the Jira_Issue__c and Jira_Project__c objects but it is not a good practice
  * 
- * @author Student Name
+ * @author Buyan Suvan
  */
 @RestResource(urlMapping='/webhook/*')
 global without sharing class WebhookResource {
@@ -27,7 +27,27 @@ global without sharing class WebhookResource {
     @HttpPost
     global static ResponseWrapper doPost() {
         // TODO: Implement webhook processing logic
-        return new ResponseWrapper('error', 'Method not implemented');
+        RestRequest request = RestContext.request;
+        String webhookType = getWebhookTypeFromPath(request.requestURI);
+        RestResponse response = RestContext.response;
+        String status;
+        String message;
+        try {
+            if (webhookType == 'jira') {
+                WebhookFactory.processWebhook(webhookType, request);
+                status = 'success';
+                message = 'Successfull';
+            } else {
+                status = 'error';
+                message = 'Unsupported webhook type';
+            }
+        } catch (Exception ex) {
+            status = 'error';
+            message = ex.getMessage();
+        }
+
+        ResponseWrapper respWrapper = new ResponseWrapper(status, message);
+        return respWrapper;
     }
     
     /**
