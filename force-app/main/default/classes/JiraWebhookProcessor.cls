@@ -383,6 +383,16 @@ public without sharing class JiraWebhookProcessor implements IWebhookProcessor {
      */
     private Jira_Project__c updateProjectRecord(Jira_Project__c existingProject, Map<String, Object> projectData) {
         // TODO: Implement project record update logic
-        return existingProject;
+        String projectId = (String)projectData.get('id');
+        String projectName = (String)projectData.get('name');
+        String projectDescription = (String)projectData.get('description');
+        Jira_Project__c projectForUpsert = new Jira_Project__c(
+            Id = existingProject.Id,
+            Name = projectName,
+            Project_ID__c = projectId,
+            Project_Name__c = projectName,
+            Description__c = projectDescription
+        );
+        return projectForUpsert;
     }
 }
